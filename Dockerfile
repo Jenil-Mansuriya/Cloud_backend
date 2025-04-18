@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 5001
 
 # Run your app, binding to the port from the environment variable
-CMD ["gunicorn", "-b", "0.0.0.0:$PORT", "cloud_backend:app"]
+CMD gunicorn -b 0.0.0.0:$PORT cloud_backend:app
