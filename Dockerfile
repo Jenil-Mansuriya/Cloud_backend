@@ -24,4 +24,5 @@ COPY . .
 EXPOSE 5001
 
 # Run your app
-CMD ["python", "cloud_backend.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "cloud_backend:app"]
+
