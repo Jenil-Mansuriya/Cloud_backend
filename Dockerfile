@@ -1,29 +1,27 @@
-FROM debian:bookworm
+FROM python:3.11.8-slim-bookworm
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    nasm \
-    spim \
-    qemu-user \
-    gcc \
-    binutils-arm-linux-gnueabi \
-    gcc-arm-linux-gnueabi \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Set environment variables
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install pip and upgrade (inside the venv now)
+RUN pip install --upgrade pip
 
 # Set working directory
 WORKDIR /app
 
-# Copy your code
+# Copy requirement files
+COPY requirements.txt .
+
+# Install dependencies inside venv
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your application
 COPY . .
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Expose your backend port
+# Expose the port your app runs on
 EXPOSE 5001
 
-# Start the Flask app
-CMD ["python3", "cloud_backend.py"]
+# Run your app
+CMD ["python", "cloud_backend.py"]
