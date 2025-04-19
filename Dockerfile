@@ -8,17 +8,27 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # Install pip and upgrade
 RUN pip install --upgrade pip
 
-# Install essential tools
+# Install essential tools, QEMU, and compilers/interpreters for x86, ARM, MIPS
 RUN apt-get update && apt-get install -y \
     nasm \
     gcc \
     g++ \
     qemu-user \
+    qemu-user-static \
+    binfmt-support \
     binutils \
     make \
     build-essential \
+    gcc-arm-linux-gnueabi \
+    binutils-arm-linux-gnueabi \
+    spim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Register qemu interpreters (mostly optional in Docker, but doesn't hurt)
+RUN update-binfmts --enable qemu-arm && \
+    update-binfmts --enable qemu-mips && \
+    update-binfmts --enable qemu-mipsel
 
 # Set working directory
 WORKDIR /app
